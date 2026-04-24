@@ -41,6 +41,7 @@
       -webkit-font-smoothing: antialiased;
       font-feature-settings: "liga" 1, "onum" 1, "ss01" 1;
       overflow-x: hidden;
+      transition: background-color 1.4s ease;
     }
 
     body::before {
@@ -523,6 +524,45 @@
       .role-row { grid-template-columns: 1fr; gap: 2px; }
     }
 
+    /* ── ORG PILLS (Matt Rothenberg hover effect) ── */
+    .work-prose {
+      max-width: 640px;
+      font-size: clamp(18px, 2vw, 22px);
+      line-height: 1.75;
+      color: var(--fg-dim);
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+    .work-prose p { margin: 0; }
+    .org-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 13px 3px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--bg-elev);
+      font-size: 0.9em;
+      cursor: default;
+      transition: border-color 0.25s, box-shadow 0.25s;
+      white-space: nowrap;
+      vertical-align: middle;
+      position: relative;
+      top: -1px;
+    }
+    .org-pill:hover {
+      border-color: var(--comment);
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.04);
+    }
+    .org-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: inline-block;
+    }
+
     /* ── FEATURED ESSAY ── */
     .featured {
       display: grid;
@@ -876,9 +916,22 @@
       .marquee-track, .hero-tag::before, .currently .head .pulse, .sys-cell .k .pulse { animation: none; }
       .reveal { opacity: 1; transform: none; transition: none; }
     }
+
+    /* ── BLOB BACKGROUND ── */
+    #pixel-bg {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0;
+      transition: opacity 1.6s ease-in;
+    }
   </style>
 </head>
 <body>
+  <canvas id="pixel-bg" aria-hidden="true"></canvas>
 
   <!--
     howdy.
@@ -1239,6 +1292,7 @@
 
   const ORGS = [
     {
+      key: "fika",
       name: "Fika Ventures",
       sub: "early-stage B2B VC · $1–5M pre-Series A",
       dateRange: "Feb 2025 → now",
@@ -1249,6 +1303,7 @@
       ],
     },
     {
+      key: "ey",
       name: "EY-Parthenon",
       sub: "strategy & M&A · software strategy group (SSG)",
       dateRange: "Jul 2022 → Feb 2025",
@@ -1259,6 +1314,7 @@
       ],
     },
     {
+      key: "dell",
       name: "Dell Technologies",
       sub: "enterprise infrastructure",
       dateRange: "Jun 2021 → May 2022",
@@ -1269,6 +1325,7 @@
       ],
     },
     {
+      key: "bu",
       name: "BU Spark! & Staples",
       sub: "early engineering roles",
       dateRange: "2020 → 2022",
@@ -1363,7 +1420,7 @@
   // ── RENDER ────────────────────────────────────────────────────────────
 
   $('work-list').innerHTML = ORGS.map(org => `
-    <div class="org ${org.current ? 'current' : ''}">
+    <div class="org ${org.current ? 'current' : ''}" data-org="${esc(org.key)}">
       <div class="org-date-range">${esc(org.dateRange)}</div>
       <div class="org-body">
         <div class="org-name">${esc(org.name)}</div>
@@ -1382,6 +1439,136 @@
       </div>
     </div>
   `).join('');
+
+  // ── PIXEL METABALL BACKGROUND ─────────────────────────────────────────
+
+  const ORG_COLORS = {
+    fika: [68,  158,  58],   // sage green
+    ey:   [41,  138, 218],   // Parthenon cornflower blue
+    dell: [0,   38,  102],   // deep Dell navy
+    bu:   [204,  18,  18],   // BU scarlet
+  };
+  const ORG_BGS = {
+    fika: '#181e18',
+    ey:   '#161820',
+    dell: '#141620',
+    bu:   '#1e1616',
+  };
+
+  const blobCanvas = document.getElementById('pixel-bg');
+  const blobCtx = blobCanvas.getContext('2d');
+  const PIXEL = 34;
+  const THRESHOLD = 0.86;
+  const N_BALLS = 22;
+
+  function resizeBlobCanvas() {
+    blobCanvas.width = window.innerWidth;
+    blobCanvas.height = window.innerHeight;
+  }
+  resizeBlobCanvas();
+  window.addEventListener('resize', resizeBlobCanvas, { passive: true });
+
+  class MetaBall {
+    constructor(i) {
+      // Spread evenly across screen on init
+      this.x = (blobCanvas.width  / N_BALLS) * i + Math.random() * (blobCanvas.width / N_BALLS);
+      this.y = Math.random() * blobCanvas.height;
+      // Lava lamp: barely-there velocity, sine does most of the floating
+      this.vx = (Math.random() - 0.5) * 0.3;
+      this.vy = (Math.random() - 0.5) * 0.35;
+      this.baseR = 62 + Math.random() * 85;
+      this.r = this.baseR;
+      this.phase  = Math.random() * Math.PI * 2;
+      this.rPhase = Math.random() * Math.PI * 2;
+      this.speed  = 0.003 + Math.random() * 0.004;
+      // Varied drift amplitude so blobs have different personalities
+      this.drift  = 0.45 + Math.random() * 0.9;
+    }
+    update() {
+      this.phase  += this.speed;
+      this.rPhase += 0.012 + Math.random() * 0.008;
+      // Pulse radius for shape morphing
+      this.r = this.baseR * (0.72 + 0.28 * Math.sin(this.rPhase));
+      // Lava lamp motion: lazy sine drift, slow float
+      this.x += this.vx + Math.sin(this.phase * 0.9) * this.drift;
+      this.y += this.vy + Math.cos(this.phase * 0.7) * this.drift * 0.8;
+      // Wrap
+      const w = blobCanvas.width, h = blobCanvas.height, pad = this.baseR * 2;
+      if (this.x < -pad) this.x = w + pad;
+      if (this.x > w + pad) this.x = -pad;
+      if (this.y < -pad) this.y = h + pad;
+      if (this.y > h + pad) this.y = -pad;
+    }
+    potential(px, py) {
+      const dx = px - this.x, dy = py - this.y;
+      const d2 = dx * dx + dy * dy || 0.001;
+      return (this.r * this.r) / d2;
+    }
+  }
+
+  let metaBalls = [];
+  let blobColor = [255, 255, 255];
+  let blobAnimId;
+  let blobsRunning = false;
+  let stopBlobTimeout;
+
+  function renderMetaballs() {
+    const cols = Math.ceil(blobCanvas.width  / PIXEL);
+    const rows = Math.ceil(blobCanvas.height / PIXEL);
+    const [r, g, b] = blobColor;
+    blobCtx.clearRect(0, 0, blobCanvas.width, blobCanvas.height);
+    for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < cols; col++) {
+        const px = col * PIXEL + PIXEL * 0.5;
+        const py = row * PIXEL + PIXEL * 0.5;
+        let pot = 0;
+        for (const ball of metaBalls) pot += ball.potential(px, py);
+        if (pot > THRESHOLD) {
+          const excess = (pot - THRESHOLD) / THRESHOLD;
+          const a = excess > 0.35 ? 0.42 : excess * 1.2;
+          blobCtx.fillStyle = `rgba(${r},${g},${b},${a})`;
+          blobCtx.fillRect(col * PIXEL, row * PIXEL, PIXEL, PIXEL);
+        }
+      }
+    }
+  }
+
+  function startBlobs(rgb) {
+    blobColor = rgb;
+    metaBalls = Array.from({ length: N_BALLS }, (_, i) => new MetaBall(i));
+    if (blobsRunning) return;
+    blobsRunning = true;
+    (function tick() {
+      if (!blobsRunning) return;
+      metaBalls.forEach(b => b.update());
+      renderMetaballs();
+      blobAnimId = requestAnimationFrame(tick);
+    })();
+  }
+
+  function stopBlobs() {
+    blobsRunning = false;
+    cancelAnimationFrame(blobAnimId);
+    blobCtx.clearRect(0, 0, blobCanvas.width, blobCanvas.height);
+  }
+
+  document.querySelectorAll('.org').forEach(orgEl => {
+    const key = orgEl.dataset.org;
+    const rgb = ORG_COLORS[key];
+    const bg  = ORG_BGS[key];
+    if (!rgb) return;
+    orgEl.addEventListener('mouseenter', () => {
+      clearTimeout(stopBlobTimeout);
+      startBlobs(rgb);
+      blobCanvas.style.opacity = '1';
+      document.body.style.backgroundColor = bg;
+    });
+    orgEl.addEventListener('mouseleave', () => {
+      blobCanvas.style.opacity = '0';
+      document.body.style.backgroundColor = '';
+      stopBlobTimeout = setTimeout(stopBlobs, 1200);
+    });
+  });
 
   $('writing-list').innerHTML = WRITING.map((w, i) => `
     <a class="writing-item" href="${esc(w.url)}" target="_blank" rel="noopener">
