@@ -20,6 +20,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%231c1a24'/><path d='M16 6L17.3 13.7L25 15L17.3 16.3L16 24L14.7 16.3L7 15L14.7 13.7Z' fill='%23c99cde'/><path d='M25 4L25.7 8.3L30 9L25.7 9.7L25 14L24.3 9.7L20 9L24.3 8.3Z' fill='%23e8c472'/><path d='M8 21L8.5 23.5L11 24L8.5 24.5L8 27L7.5 24.5L5 24L7.5 23.5Z' fill='%23a6c97d'/></svg>">
   <style>
     :root {
       --bg:          #1c1a24;
@@ -980,6 +981,140 @@
       .palette { width: 95vw; }
     }
 
+    /* ── CUSTOM CURSOR ── */
+    #cursor {
+      position: fixed;
+      top: 0; left: 0;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 9999;
+      font-size: 17px;
+      line-height: 1;
+      color: var(--purple);
+      user-select: none;
+      transition: transform 0.08s, color 0.15s;
+      display: none;
+    }
+    @media (pointer: fine) {
+      * { cursor: none !important; }
+      #cursor { display: block; }
+    }
+    .sparkle-p {
+      position: fixed;
+      top: 0; left: 0;
+      pointer-events: none;
+      z-index: 9998;
+      font-size: 11px;
+      line-height: 1;
+      user-select: none;
+    }
+
+    /* ── WRITING EXTRAS ── */
+    .writing-mins {
+      font-family: var(--mono);
+      font-size: 10.5px;
+      color: var(--comment);
+      margin-top: 3px;
+    }
+    .writing-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-height 0.3s ease, opacity 0.3s ease, margin-top 0.3s ease;
+      margin-top: 0;
+    }
+    .writing-item:hover .writing-tags { max-height: 40px; opacity: 1; margin-top: 7px; }
+    .writing-tag {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--purple);
+      background: rgba(201,156,222,0.08);
+      border: 1px solid rgba(201,156,222,0.18);
+      padding: 1px 7px;
+      border-radius: 999px;
+    }
+
+    /* ── NOW SECTION ── */
+    .now-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .now-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-radius: 12px;
+      padding: 22px 22px 20px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.22s, transform 0.22s;
+    }
+    .now-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--accent, var(--purple));
+      opacity: 0.75;
+    }
+    .now-card:hover { border-color: var(--accent, var(--purple)); transform: translateY(-2px); }
+    .now-card.featured {
+      grid-column: span 2;
+      background: linear-gradient(135deg, var(--bg-card) 55%, var(--bg-elev) 100%);
+    }
+    .now-card.featured .now-v {
+      font-family: var(--display);
+      font-style: italic;
+      font-size: 22px;
+      font-weight: 400;
+      font-variation-settings: "opsz" 96;
+      line-height: 1.25;
+      color: var(--fg);
+    }
+    .now-k {
+      display: block;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--accent, var(--comment));
+      margin-bottom: 12px;
+    }
+    .now-v {
+      font-size: 15px;
+      color: var(--fg);
+      line-height: 1.55;
+    }
+    .now-blob {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+    }
+    .now-foot {
+      grid-column: 1 / -1;
+      font-family: var(--mono);
+      font-size: 10.5px;
+      color: var(--comment);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 2px 2px;
+    }
+    .now-foot .ok { color: var(--sage); }
+    .now-foot .right { margin-left: auto; }
+    @media (max-width: 800px) {
+      .now-grid { grid-template-columns: repeat(2, 1fr); }
+      .now-card.featured { grid-column: span 2; }
+    }
+    @media (max-width: 480px) {
+      .now-grid { grid-template-columns: 1fr; }
+      .now-card.featured { grid-column: span 1; }
+    }
+
     /* ── BLOB BACKGROUND ── */
     #pixel-bg {
       position: fixed;
@@ -995,6 +1130,7 @@
 </head>
 <body>
   <canvas id="pixel-bg" aria-hidden="true"></canvas>
+  <div id="cursor" aria-hidden="true">✦</div>
 
   <!--
     howdy.
@@ -1015,6 +1151,7 @@
       <div class="nav-right">
         <div class="nav-links">
           <a href="#about">about</a>
+          <a href="#now">now</a>
           <a href="#work">work</a>
           <a href="#writing">writing</a>
           <a href="#projects">projects</a>
@@ -1219,6 +1356,16 @@
     </div>
   </section>
 
+  <!-- NOW -->
+  <section id="now">
+    <div class="container">
+      <div class="section-header reveal"><span class="dollar">$</span> cat now.md</div>
+      <h2 class="section-title reveal">what i'm into <em>right now</em></h2>
+      <p class="section-lede reveal">a snapshot. updated whenever something changes enough to matter.</p>
+      <div class="now-grid reveal" id="now-grid"></div>
+    </div>
+  </section>
+
   <!-- WORK -->
   <section id="work">
     <div class="container">
@@ -1289,7 +1436,7 @@
           if you want to argue with me about something i wrote, even better.
         </p>
         <div class="contact-list">
-          <div class="contact-row"><span class="k">email</span><span class="arrow">→</span><a href="mailto:emma.wirt@gmail.com">emma.wirt@gmail.com</a></div>
+          <div class="contact-row"><span class="k">email</span><span class="arrow">→</span><a href="mailto:emma.wirt@gmail.com" id="email-copy" title="click to copy">emma.wirt@gmail.com</a></div>
           <div class="contact-row"><span class="k">linkedin</span><span class="arrow">→</span><a href="https://www.linkedin.com/in/emma-w-42a469182/" target="_blank" rel="noopener">linkedin.com/in/emma-w-42a469182</a></div>
           <div class="contact-row"><span class="k">writing</span><span class="arrow">→</span><a href="https://medium.com/@emwirt" target="_blank" rel="noopener">medium.com/@emwirt</a></div>
           <div class="contact-row"><span class="k">Pig</span><span class="arrow">→</span><a href="https://www.instagram.com/pigalishh/" target="_blank" rel="noopener">@pigalishh</a></div>
@@ -1404,12 +1551,21 @@
   ];
 
   const WRITING = [
-    { title: "Every Major AI Model Tier, One Map",                               sub: "every founder has a model opinion. almost nobody has a model tier opinion, which is the decision that actually matters.",                                                                                  date: "Feb 2026", url: "https://emwirt.medium.com/every-major-ai-model-tier-one-map-c9c238cb0bb8" },
-    { title: "Agents vs. Workflows: The Framework Founders Actually Need",       sub: "if you can draw the flowchart before it runs, it's not an agent. it's a workflow. for 95% of startups, that's exactly what you need.",                                                                    date: "Feb 2026", url: "https://emwirt.medium.com/agents-vs-workflows-the-framework-founders-actually-need-519b5da8bd34" },
-    { title: "Harvest Now, Decrypt Later",                                       sub: "nation-states are stealing your encrypted data right now. they can't read it yet. why fintech, healthtech, and legaltech founders should care about Q-Day now.",                                          date: "Dec 2025", url: "https://emwirt.medium.com/harvest-now-decrypt-later-why-quantum-computing-threatens-your-data-today-7395372e1d1f" },
-    { title: "Lasers, Nukes, and the Scaling Wall",                             sub: "a startup is cooling GPUs with lasers. microsoft is restarting three mile island. the constraint of AI isn't algorithms anymore, it's atoms.",                                                            date: "Dec 2025", url: "https://emwirt.medium.com/lasers-nukes-and-the-scaling-wall-why-the-biggest-data-center-wont-win-dac77d867568" },
-    { title: "DuckLake: Stop Cosplaying as Netflix",                            sub: "your startup has 12 engineers and processes 50GB a day. you are not netflix. stop evaluating iceberg.",                                                                                                    date: "Nov 2025", url: "https://emwirt.medium.com/ducklake-why-early-stage-startups-should-stop-cosplaying-as-netflix-a5484cf320cd" },
-    { title: "The 5 Early Technical Decisions That Come Back to Haunt You",     sub: "after sitting in on 30+ technical diligences, these are the architectural choices that consistently torpedo rounds 18 months later.",                                                                      date: "Sep 2025", url: "https://emwirt.medium.com/the-5-early-technical-decisions-that-come-back-to-haunt-you-780d21792096" },
+    { title: "Every Major AI Model Tier, One Map",                           sub: "every founder has a model opinion. almost nobody has a model tier opinion, which is the decision that actually matters.",                                                                               date: "Feb 2026", mins: 5, tags: ['AI', 'models', 'framework'],          url: "https://emwirt.medium.com/every-major-ai-model-tier-one-map-c9c238cb0bb8" },
+    { title: "Agents vs. Workflows: The Framework Founders Actually Need",   sub: "if you can draw the flowchart before it runs, it's not an agent. it's a workflow. for 95% of startups, that's exactly what you need.",                                                                 date: "Feb 2026", mins: 6, tags: ['AI', 'agents', 'startups'],           url: "https://emwirt.medium.com/agents-vs-workflows-the-framework-founders-actually-need-519b5da8bd34" },
+    { title: "Harvest Now, Decrypt Later",                                   sub: "nation-states are stealing your encrypted data right now. they can't read it yet. why fintech, healthtech, and legaltech founders should care about Q-Day now.",                                       date: "Dec 2025", mins: 7, tags: ['security', 'quantum', 'fintech'],     url: "https://emwirt.medium.com/harvest-now-decrypt-later-why-quantum-computing-threatens-your-data-today-7395372e1d1f" },
+    { title: "Lasers, Nukes, and the Scaling Wall",                         sub: "a startup is cooling GPUs with lasers. microsoft is restarting three mile island. the constraint of AI isn't algorithms anymore, it's atoms.",                                                           date: "Dec 2025", mins: 5, tags: ['infrastructure', 'energy', 'AI'],    url: "https://emwirt.medium.com/lasers-nukes-and-the-scaling-wall-why-the-biggest-data-center-wont-win-dac77d867568" },
+    { title: "DuckLake: Stop Cosplaying as Netflix",                        sub: "your startup has 12 engineers and processes 50GB a day. you are not netflix. stop evaluating iceberg.",                                                                                                   date: "Nov 2025", mins: 6, tags: ['data', 'infrastructure', 'startups'], url: "https://emwirt.medium.com/ducklake-why-early-stage-startups-should-stop-cosplaying-as-netflix-a5484cf320cd" },
+    { title: "The 5 Early Technical Decisions That Come Back to Haunt You", sub: "after sitting in on 30+ technical diligences, these are the architectural choices that consistently torpedo rounds 18 months later.",                                                                    date: "Sep 2025", mins: 8, tags: ['architecture', 'diligence', 'startups'], url: "https://emwirt.medium.com/the-5-early-technical-decisions-that-come-back-to-haunt-you-780d21792096" },
+  ];
+
+  const NOW = [
+    { k: 'reading',  v: "The Innovator's Dilemma - Clayton Christensen",                                        accent: 'var(--purple)', rgb: '201,156,222', featured: true  },
+    { k: 'building', v: "a script that closes my browser tabs after 48 hours. intervention-style.",             accent: 'var(--sage)',   rgb: '166,201,125', featured: false },
+    { k: 'into',     v: "two-color brioche knitting (it's yarn-overs all the way down. i cannot be stopped.)", accent: 'var(--rose)',   rgb: '232,118,148', featured: false },
+    { k: 'watching', v: "Real Housewives of Salt Lake City. team lisa barlow, no notes.",                       accent: 'var(--gold)',   rgb: '232,196,114', featured: false },
+    { k: 'thinking', v: "whether Lisa Barlow's approach to a hostile room is just good stakeholder management", accent: 'var(--teal)',   rgb: '121,196,182', featured: false },
+    { k: 'location', v: 'los angeles, CA',                                                                      accent: 'var(--comment)',rgb: '124,110,127', featured: false },
   ];
 
   const PROJECTS = [
@@ -1643,10 +1799,31 @@
       <div class="writing-body">
         <div class="writing-title">${esc(w.title)}</div>
         <div class="writing-sub">${esc(w.sub)}</div>
+        <div class="writing-mins">${w.mins} min read</div>
+        <div class="writing-tags">${w.tags.map(t => `<span class="writing-tag">${esc(t)}</span>`).join('')}</div>
       </div>
       <span class="writing-arrow">→</span>
     </a>
   `).join('');
+
+  function nowBlobs(r) {
+    const n = 2 + Math.floor(Math.random() * 2);
+    return Array.from({ length: n }, () => {
+      const x = 5  + Math.random() * 90;
+      const y = 5  + Math.random() * 90;
+      const s = 100 + Math.random() * 120;
+      const a = (0.18 + Math.random() * 0.14).toFixed(2);
+      return `<span class="now-blob" style="left:${x}%;top:${y}%;width:${s}px;height:${s}px;background:radial-gradient(circle,rgba(${r.rgb},${a}) 0%,transparent 55%)"></span>`;
+    }).join('');
+  }
+
+  $('now-grid').innerHTML = NOW.map(r => `
+    <div class="now-card${r.featured ? ' featured' : ''}" style="--accent:${r.accent}">
+      ${nowBlobs(r)}
+      <span class="now-k">${esc(r.k)}</span>
+      <p class="now-v">${esc(r.v)}</p>
+    </div>
+  `).join('') + `<div class="now-foot"><span class="ok">●</span> updated April 2026 <span class="right">nownownow.com</span></div>`;
 
   $('project-grid').innerHTML = PROJECTS.map(p => `
     <a class="project-card" href="${esc(p.url)}" target="_blank" rel="noopener">
@@ -1705,7 +1882,7 @@
   function updateActiveNav() {
     const y = window.scrollY + 120;
     let active = null;
-    ['about','work','writing','projects','contact'].forEach(s => {
+    ['about','now','work','writing','projects','contact'].forEach(s => {
       const el = document.getElementById(s);
       if (el && el.offsetTop <= y) active = s;
     });
@@ -1716,6 +1893,30 @@
   window.addEventListener('scroll', updateActiveNav, { passive: true });
   updateActiveNav();
 
+  // ── MEOW ──────────────────────────────────────────────────────────────
+
+  function playMeow() {
+    try {
+      const ac = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ac.createOscillator();
+      const gain = ac.createGain();
+      osc.connect(gain);
+      gain.connect(ac.destination);
+      osc.type = 'triangle';
+      const t = ac.currentTime;
+      osc.frequency.setValueAtTime(300, t);
+      osc.frequency.linearRampToValueAtTime(820, t + 0.12);
+      osc.frequency.linearRampToValueAtTime(460, t + 0.34);
+      osc.frequency.linearRampToValueAtTime(380, t + 0.5);
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(0.16, t + 0.08);
+      gain.gain.setValueAtTime(0.16, t + 0.3);
+      gain.gain.linearRampToValueAtTime(0, t + 0.52);
+      osc.start(t);
+      osc.stop(t + 0.55);
+    } catch(e) {}
+  }
+
   // ── BOOP ──────────────────────────────────────────────────────────────
 
   let boops = Number(localStorage.getItem('pig-boops') || 0);
@@ -1723,6 +1924,7 @@
   let boopTimer;
 
   $('pig-stage').addEventListener('click', e => {
+    playMeow();
     boops++;
     localStorage.setItem('pig-boops', String(boops));
     $('boop-count').textContent = boops;
@@ -1744,6 +1946,18 @@
     if (milestones[boops]) showToast(milestones[boops]);
   });
   if ($('sys-boops')) $('sys-boops').textContent = boops;
+
+  // ── EMAIL COPY ────────────────────────────────────────────────────────
+
+  document.getElementById('email-copy').addEventListener('click', async e => {
+    e.preventDefault();
+    try {
+      await navigator.clipboard.writeText('emma.wirt@gmail.com');
+      showToast('copied: emma.wirt@gmail.com ✓');
+    } catch {
+      window.location.href = 'mailto:emma.wirt@gmail.com';
+    }
+  });
 
   // ── TOAST ─────────────────────────────────────────────────────────────
 
@@ -1775,6 +1989,7 @@
 
   const PALETTE_ITEMS = [
     { icon: '→', name: 'Go to about',      hint: 'section',    action: () => jumpTo('#about') },
+    { icon: '→', name: 'Go to now',        hint: 'section',    action: () => jumpTo('#now') },
     { icon: '→', name: 'Go to work',       hint: 'section',    action: () => jumpTo('#work') },
     { icon: '→', name: 'Go to writing',    hint: 'section',    action: () => jumpTo('#writing') },
     { icon: '→', name: 'Go to projects',   hint: 'section',    action: () => jumpTo('#projects') },
@@ -1879,6 +2094,7 @@
       ['?',      'show shortcuts'],
       ['j / k',  'scroll down / up'],
       ['g a',    'jump to about'],
+      ['g n',    'jump to now'],
       ['g w',    'jump to work'],
       ['g r',    'jump to writing'],
       ['g p',    'jump to projects'],
@@ -1948,7 +2164,7 @@ ${esc(JSON.stringify(payload, null, 2))}
   });
 
   let gPressed = false, gTimer;
-  const JUMP = { a: '#about', w: '#work', r: '#writing', p: '#projects', c: '#contact', t: '#top' };
+  const JUMP = { a: '#about', n: '#now', w: '#work', r: '#writing', p: '#projects', c: '#contact', t: '#top' };
   document.addEventListener('keydown', e => {
     if (palOpen || document.activeElement?.tagName === 'INPUT') return;
     if (e.key === 'g' && !e.metaKey && !e.ctrlKey && !e.altKey) {
@@ -1961,6 +2177,46 @@ ${esc(JSON.stringify(payload, null, 2))}
       e.preventDefault();
       qs(JUMP[e.key])?.scrollIntoView({ behavior: 'smooth' });
       gPressed = false;
+    }
+  });
+
+  // ── SPARKLY CURSOR ────────────────────────────────────────────────────
+
+  const cursorEl = document.getElementById('cursor');
+  const SPARKLE_CHARS = ['✦','✧','⋆','✺','·','*'];
+  const SPARKLE_COLORS = ['var(--purple)','var(--rose)','var(--gold)','var(--sage)'];
+  let lastSparkleTime = 0;
+
+  document.addEventListener('mousemove', e => {
+    cursorEl.style.left = e.clientX + 'px';
+    cursorEl.style.top  = e.clientY + 'px';
+    const now = Date.now();
+    if (now - lastSparkleTime > 45) {
+      lastSparkleTime = now;
+      const s = document.createElement('span');
+      s.className = 'sparkle-p';
+      s.textContent = SPARKLE_CHARS[Math.floor(Math.random() * SPARKLE_CHARS.length)];
+      s.style.left  = e.clientX + 'px';
+      s.style.top   = e.clientY + 'px';
+      s.style.color = SPARKLE_COLORS[Math.floor(Math.random() * SPARKLE_COLORS.length)];
+      document.body.appendChild(s);
+      const angle = Math.random() * Math.PI * 2;
+      const dist  = 14 + Math.random() * 24;
+      s.animate([
+        { opacity: 1, transform: 'translate(-50%,-50%) scale(1)' },
+        { opacity: 0, transform: `translate(calc(-50% + ${Math.cos(angle)*dist}px), calc(-50% + ${Math.sin(angle)*dist}px)) scale(0.2)` },
+      ], { duration: 680, easing: 'ease-out', fill: 'forwards' });
+      setTimeout(() => s.remove(), 700);
+    }
+  });
+
+  document.addEventListener('mouseover', e => {
+    if (e.target.closest('a, button, [role="button"]')) {
+      cursorEl.style.transform = 'translate(-50%,-50%) scale(1.5)';
+      cursorEl.style.color = 'var(--rose)';
+    } else {
+      cursorEl.style.transform = 'translate(-50%,-50%) scale(1)';
+      cursorEl.style.color = 'var(--purple)';
     }
   });
 
