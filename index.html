@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>emma wirt</title>
   <meta name="description" content="emma wirt. platform at fika ventures. writing about AI, data infra, and boring technology that ships." />
+  <meta property="og:title" content="emma wirt" />
+  <meta property="og:description" content="platform at fika ventures. writing about AI, data infra, and boring technology that ships." />
+  <meta property="og:url" content="https://pigsmom.com" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="pigsmom.com" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="emma wirt" />
+  <meta name="twitter:description" content="platform at fika ventures. writing about AI, data infra, and boring technology that ships." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -917,6 +925,49 @@
       .reveal { opacity: 1; transform: none; transition: none; }
     }
 
+    /* ── MOBILE ── */
+    @media (max-width: 540px) {
+      .container { padding: 0 18px; }
+
+      .hero { padding: 96px 0 36px; }
+      .hero-title .line-2 { padding-left: 0.2em; }
+      .hero-title .line-3 { padding-left: 0.5em; }
+      .hero-lede { font-size: 18px; }
+      .hero-cta { flex-direction: column; align-items: flex-start; gap: 10px; }
+
+      section { padding: 52px 0; }
+      .section-title { margin-bottom: 24px; }
+      .section-lede { font-size: 17px; margin-bottom: 32px; }
+
+      .about-main p { font-size: 17px; }
+      .about-main p:first-child::first-letter { font-size: 3em; padding-right: 8px; }
+
+      .org { grid-template-columns: 1fr; gap: 6px; }
+      .org-date-range { padding-top: 0; }
+      .role-row { grid-template-columns: 1fr; gap: 2px; }
+      .role-date { display: inline-block; margin-bottom: 2px; }
+
+      .featured-body { padding: 24px 20px; }
+      .featured-title { font-size: 24px; }
+
+      .writing-item { grid-template-columns: 1fr; gap: 4px; padding: 16px 0; }
+      .writing-idx, .writing-date { display: inline-block; margin-right: 8px; }
+      .writing-arrow { display: none; }
+      .writing-title { font-size: 19px; }
+
+      .project-grid { grid-template-columns: 1fr; }
+
+      .contact-card { padding: 28px 20px; }
+      .contact-list { font-size: 13px; }
+      .contact-row { flex-direction: column; gap: 2px; }
+      .contact-row .arrow { display: none; }
+
+      .sys-status { grid-template-columns: 1fr 1fr; }
+      .foot-inner { flex-direction: column; gap: 8px; text-align: center; }
+
+      .palette { width: 95vw; }
+    }
+
     /* ── BLOB BACKGROUND ── */
     #pixel-bg {
       position: fixed;
@@ -1143,6 +1194,7 @@
             <div class="row"><span class="k">time</span><span class="v" id="now-time">--:--</span></div>
             <div class="row"><span class="k">loc</span><span class="v">los angeles</span></div>
             <div class="row"><span class="k">role</span><span class="v dim">platform @ fika</span></div>
+            <div class="row"><span class="k">building</span><span class="v dim">hiring signal tooling</span></div>
             <div class="row"><span class="k">mood</span><span class="v dim" id="mood">caffeinated</span></div>
             <div class="row"><span class="k">Pig</span><span class="v dim" id="pig-status">asleep on the couch</span></div>
           </div>
